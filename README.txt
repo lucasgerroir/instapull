@@ -8,8 +8,8 @@ Stable tag: 4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Using a shortcode this plugin pulls a designated instagram feed as a list.
+Using a short-code this plugin pulls a designated Instagram feed as a list.
 
 == Description ==
 
-Using a shortcode this plugin pulls a designated instagram feed as a list. In the admin panel of the plugin you can input a instagram feed and limit the amount of items shown in the list. 
+Using a short-code this plugin pulls a designated Instagram feed as a list. In the admin panel of the plugin you can input a Instagram feed and limit the amount of items shown in the list. 
