@@ -2,3 +2,86 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+ .insta-container {
+     display: flex;
+     flex-wrap: wrap;
+ }
+
+ .instapull-title {
+     margin-bottom: 20px;
+     text-align: center;
+ }
+
+ * {
+    box-sizing: border-box;
+  }
+
+  /* Card css starts here */
+
+  .card {
+    position: relative;
+    background-color: #292929;
+    width: 20vw;
+    min-width: 350px;
+    height: auto;
+    border-radius: 6px;
+    padding: 2rem;
+    color: #fff;
+    box-shadow: 0 .25rem .25rem rgba(0,0,0,0.2),
+      0 0 1rem rgba(0,0,0,0.2);
+    overflow: hidden;
+    margin: 20px 0px 0px 20px;
+  }
+
+  .card:hover .card-image{
+    transform: scale(1.1);
+  }
+    
+    .card-image_container {
+        margin: -2rem -2rem 1rem -2rem;
+    }
+
+    .card-image {
+        opacity: 0;
+        animation: ImageFadeIn .8s 1s forwards;
+        max-width: 100%;
+    }
+
+    .card-title {
+        color: white;
+        margin-top: 0;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+    }
+
+    .card-content {
+        margin-top: -1rem;
+        opacity: 0;
+        animation: FadeIn .8s 1.8s forwards;
+    }
+
+    .card-content p {
+        font-size: 16px;
+    }
+
+    .card-content span {
+        font-size: 14px;
+    }
+
+/* Card css ends here */
+
+/* animators start here */
+    
+@keyframes FadeIn {
+    0% { transform: translateY(-1rem); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes ImageFadeIn {
+    0% { transform: translate(-.5rem, -.5rem) scale(1.05); opacity: 0; filter: blur(2px); }
+    50% { opacity: 1; filter: blur(2px); }
+    100% { transform: translateY(0) scale(1.0); opacity: 1; filter: blur(0); }
+}
+
+/* animators end here */

@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Insta Pull
  * Plugin URI:        lucasgerroir.com
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Using a shortcode this plugin pulls a designated instagram feed as a list.
  * Version:           1.0.0
  * Author:            Lucas Gerroir
  * Author URI:        lucasgerroir.com

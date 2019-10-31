@@ -96,8 +96,138 @@ class Instapull_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/instapull-public.js', array( 'jquery' ), $this->version, false );
+		// wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/instapull-public.js', array( 'jquery' ), $this->version, false );
 
+	}
+	
+	/**
+	 * Use the instagram graphql api to get the set user's page. 
+	 *
+	 * @param      string    $user_id    Instagram unique user id/handle.
+	 * @return     object                The returned object data of the users instagram page.
+	 * @since    1.0.0
+	 */
+	private function get_instagram_feed($user_id) {
+
+		$data = wp_remote_get( "https://www.instagram.com/" . $user_id . "/?__a=1");
+
+		return json_decode($data['body']);;
+	}
+
+	/**
+	 * Map the returned instagram graphql data to our own readable post data array. 
+	 *
+	 * @param      string    $data    Object data of the users instagram page.
+	 * @return     array                 The formatted array of post data.
+	 * @since    1.0.0
+	 */
+	private function map_instagram_data($data = null) {
+		
+		if(is_null($data)) {
+			return;
+		}
+
+		$post_data = [
+			"image"=> $data->thumbnail_src,
+			"title"=> $data->title,
+			"date"=> date('m/d/Y', $data->taken_at_timestamp),
+			"url"=> $data->display_url,
+			"description"=> $data->edge_media_to_caption->edges[0]->node->text,
+		];
+
+		return $post_data;
+	}
+
+	/**
+	 * A check to see if we should use the shortcode attribute or admin set limit. 
+	 *
+	 * @param      integer    $limit           The shortcode attribue limit.
+	 * @param      integer    $option_limit    The admin set limit.
+	 * @return     array                       The limit we want to use.
+	 * @since    1.0.0
+	 */
+	private function set_limit($limit = null, $option_limit = null) {
+		
+		if(empty($limit) == false) {
+			return $limit;
+		}
+
+		return $option_limit;
+	}
+
+	/**
+	 * The instagram shortcode that displays a users instagram feed
+	 *
+	 * @param      array    $atts              The shortcode attribues.
+	 * @return     array                       The shortcode html.
+	 * @since    1.0.0
+	 */
+	public function insta_pull_func( $atts ){ 
+		
+		extract(shortcode_atts(array(
+			'limit' => null
+		), $atts));
+
+		// get the admin options.
+		$options = get_option($this->plugin_name);
+
+		// check if there is a feed set if not warn users.
+		if(empty($options['feed'])) {
+			return "Please set an instagram user.";
+		}
+		
+		// Try to get the users instagram page data.
+		$feed_data = $this->get_instagram_feed($options['feed']);
+
+		// If there is no data warn user.
+		if(empty($feed_data)) {
+			return "Please set a valid instagram user.";
+		}
+
+		// Get the max limit we want to use either as a shortcode attribute or admin param 
+		$max_limit = $this->set_limit($limit, $options['limit']);
+		
+		// set the shortcode title
+		$shortcode_title = $options['title'];
+		
+		// assign the instagram posts to variable
+		$feed_posts = $feed_data->graphql->user->edge_owner_to_timeline_media->edges;
+		
+		// start output buffer
+		ob_start();
+
+		// keep track of the posts count to compare limit
+		$post_count = 0;
+
+		// include the shortcode header
+		require( 'partials/instapull-header.php' );
+
+		// loop through posts to display them
+		foreach($feed_posts as $key => $post) {
+
+			// check if we have hit the limit
+			if($post_count == $max_limit) {
+				break;
+			}
+
+			// map the post data to a formatted easy to read array
+			$post_node = $post->node;
+			$post_data = $this->map_instagram_data($post_node);
+			
+			// include the post card view
+			require( 'partials/instapull-posts.php' );
+
+			// increase the counter
+			$post_count ++;
+		}
+
+		// include the shortcode footer
+		require( 'partials/instapull-footer.php' );
+		
+		// return the buffer output
+		$output = ob_get_clean();
+
+		return $output;
 	}
 
 }
